@@ -1,0 +1,29 @@
+{
+    "version": "0.2",
+    "language": "en,en-GB",
+    "dictionaries": [
+        "scientific-terms-us"
+    ],
+    "words": [
+        "djmaxus",
+        "Elizarev",
+        "Maksim",
+        "ORCID",
+        "ruleset",
+        "Rulesets",
+        "Simulink",
+        "Zenodo"
+    ],
+    "flagWords": [],
+    "ignorePaths": [
+        "CHANGELOG.md",
+        "**/*.yml",
+        "**/*.m",
+        "**/*.json"
+    ],
+    "ignoreWords": [
+        "buildtool",
+        "oneline",
+        "waitbar"
+    ]
+}

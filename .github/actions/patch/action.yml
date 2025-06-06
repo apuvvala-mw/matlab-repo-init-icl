@@ -1,0 +1,40 @@
+# Experimental action to pull the latest release of matlab-repo-init
+# and apply it as a patch to the current repository.
+# This action is not intended for production use and is subject to change.
+# It is recommended to simply download official release artifacts
+
+name: 'matlab-repo-patch'
+description: 'Pull latest release of `matlab-repo-init`'
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        git remote add matlab-repo-init https://github.com/djmaxus/matlab-repo-init.git --fetch --no-tags
+
+        release_sha=$(git ls-remote --tags matlab-repo-init | tail -1 | cut -f1)
+        release_ref=$(git ls-remote --tags matlab-repo-init | tail -1 | cut -f2)
+
+        # compile and apply patch
+        git diff --binary "$(git hash-object -t tree /dev/null)" "$release_sha" > matlab-repo-init.patch
+        git apply --theirs --3way matlab-repo-init.patch
+
+        excluded_files="README.md LICENSE.md CHANGELOG.md .vscode/* .release-please-manifest.json version.txt src/* .gitattributes .gitignore init.m main.m doc/* .github/actions/* .github/workflows/sync-mirror.yml"
+
+        for file in $excluded_files; do
+        if [ -e "$file" ]; then
+            git restore -S "$file"
+        fi
+        done
+
+        git add matlab-repo-init.patch
+
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+        git commit -m "matlab-repo-init: $release_ref"
+
+        git --no-pager log --decorate=short --pretty=oneline -n1
+
+        git checkout -b matlab-repo-init
+        git push -u origin matlab-repo-init
